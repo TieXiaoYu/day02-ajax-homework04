@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qf.dao.DiscussMapper">
+
+    <resultMap id="result" type="com.qf.pojo.Discuss">
+        <id column="id" property="id"></id>
+        <result column="discuss_content" property="discuss_content"></result>
+        <result column="personn" property="person"></result>
+        <result column="discuss_time" property="discuss_time"></result>
+        <result column="news_id" property="news_id"></result>
+    </resultMap>
+    <select id="selectDiscuss" parameterType="Integer" resultMap="result">
+        SELECT * FROM discuss WHERE news_id = #{id}
+    </select>
+    <delete id="deleteDiscuss" parameterType="Integer">
+        DELETE FROM discuss WHERE news_id = #{id}
+    </delete>
+    <insert id="addDiscuss" parameterType="com.qf.pojo.Discuss">
+        INSERT into discuss(discuss_content,personn,news_id) VALUES (#{discuss_content},#{person},#{id})
+    </insert>
+</mapper>

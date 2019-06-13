@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>新闻</title>
+    <script type="text/javascript" src="js/jquery-1.12.2.min.js"></script>
+    <style type="text/css">
+        thead {
+            background-color:black;
+            color: white;
+        }
+        tbody tr:nth-child(odd) {
+            background-color:#adadad ; /* green, 10% alpha */
+        }
+        tbody tr:nth-child(even) {
+            background-color: rgba(255, 0, 0, 0.2); /* red, 30% alpha */
+        }
+    </style>
+    <style>
+        .table{
+            border:1px solid;
+            border-collapse: collapse;
+        }
+        .table th,td{
+            border:1px solid;
+        }
+    </style>
+</head>
+<center>
+<body>
+新闻标题:<input id="title" type="text" name="title" />
+<button onclick="searchNews(1)">查询</button>
+<br />
+<table id="table1" width="1500" style="text-align: center;border-collapse: collapse" >
+    <thead>
+        <tr>
+            <th width="10%">新闻编号</th>
+            <th>新闻标题</th>
+            <th>新闻摘要</th>
+            <th width="10%">作者</th>
+            <th width="20%">创建时间</th>
+            <th width="20%">操作</th>
+        </tr>
+    </thead>
+    <tbody>
+    <!--    <tr>
+            <td>1</td>
+            <td>aaaa</td>
+            <td>java</td>
+            <td>2010</td>
+            <td>dddd</td>
+            <td>
+                <a href="#">查看评论</a>
+                <a href="#">评论</a>
+                <a href="#" onclick="deleteNews()">删除</a>
+            </td>
+        </tr>
+
+        <tr>
+
+            <td colspan="6"><a href="javascript:searchNews(1)">首页</a>|
+            <a href="javascript:searchNews(2)">上一页</a>|
+            <a href="javascript:searchNews(2)">下一页</a>|
+            <a href="javascript:searchNews(10)">末页</a>
+            第1页/共10页
+            （10条记录）</td>
+        </tr>-->
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    $(function(){
+        searchNews(1);
+    })
+</script>
+<script type="text/javascript">
+    function searchNews(page){
+        $.ajax({
+            type:"get",
+            url:"news/list",
+            data:{page:page,limit:5,title:$("#title").val()},
+            dataType:"json",
+            success:function(data){
+                if(data.code == 1){
+                    $("tbody").empty();
+                    var infos = data.info.list;
+                    for(var i = 0; i < infos.length; i++){
+                        var html = '<tr>\n' +
+                            '            <td>' + infos[i].id + '</td>\n' +
+                            '            <td>' + infos[i].title + '</td>\n' +
+                            '            <td>' + infos[i].content + '</td>\n' +
+                            '            <td>' + infos[i].author + '</td>\n' +
+                            '            <td>' + infos[i].create_time + '</td>\n' +
+                            '            <td>' + '<a href="javascript:selectDiscuss(' + infos[i].id + ')">查看评论</a>'+'&nbsp;'+
+                                                '<a href="javascript:discuss(' + infos[i].id + ')">评论</a>'+'&nbsp;'+
+                                                 '<a href="javascript:deleteNews(' + infos[i].id + ')">删除</a>'+ '</td>\n' +
+                            '        </tr>';
+                        $("tbody").append($(html));
+                    }
+                    var html = '<tr><td colspan="6"><a href="javascript:searchNews(1)">首页</a>|\n' +
+                        '                <a href="javascript:searchNews(' + (data.info.currentPage - 1) + ')">上一页</a>|\n' +
+                        '                <a href="javascript:searchNews(' + (data.info.currentPage + 1) + ')">下一页</a>|\n' +
+                        '                <a href="javascript:searchNews(' + data.info.totalPage + ')">末页</a>\n' +
+                        '                第' + data.info.currentPage + '页/共' + data.info.totalPage + '页\n' +
+                        '                （' + data.info.count + '条记录）</td></tr>';
+                    $("tbody").append($(html));
+                }
+            }
+
+
+        })
+    }
+
+</script>
+<script type="text/javascript">
+    function selectDiscuss(id) {
+        location.href="discuss.jsp?id="+id;
+    }
+</script>
+<script type="text/javascript">
+    function discuss(id) {
+        location.href="add.jsp?id="+id;
+    }
+</script>
+<script type="text/javascript">
+        function deleteNews(id) {
+            if(confirm("确定要删除该条新闻以及所有评论吗？")) {
+                $.ajax({
+                    url:"news/del",
+                    type:"post",
+                    dataType:"json",
+                    data:{id:id},
+                    success:function (data) {
+                        if(data.code == 1) {
+                            alert("删除成功")
+                            searchNews(1);
+                        }
+                    }
+                });
+            }
+        }
+</script>
+
+</body>
+</center>
+</html>
