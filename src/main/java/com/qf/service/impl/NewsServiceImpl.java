@@ -32,6 +32,7 @@ public class NewsServiceImpl implements NewsService{
         map.put("count", ((Page)list).getTotal());// 总记录数
         map.put("currentPage", pageNum);
         map.put("list", list);
+        System.out.println("git");
         return map;
     }
 
